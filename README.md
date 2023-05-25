@@ -2,6 +2,8 @@
 
 Docker Compose pipeline including React Frontend, Node.js Express API Backend, MySQL Database and phpMyAdmin interface for MySQL. This is a development environment with hot-reload of React and Express servers and a production environment with React using NGINX.
 
+![Docker Architecture](docker-architecture.jpg)
+
 ## Prerequisites
 
 - Node.js installed
