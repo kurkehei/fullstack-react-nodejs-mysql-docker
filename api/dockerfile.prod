@@ -1,0 +1,19 @@
+# We are using latest node version
+FROM node:latest
+
+# Add a work directory
+WORKDIR /api
+
+# Cache and install dependencies
+COPY package*.json .
+RUN npm install
+RUN npm ci --omit=dev
+
+# Copy app files
+COPY . .
+
+# Expose port
+EXPOSE 5000
+
+# Start app
+CMD ["npm", "start"]

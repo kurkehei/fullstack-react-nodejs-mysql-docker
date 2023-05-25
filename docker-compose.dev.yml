@@ -1,0 +1,73 @@
+version: '3.9'
+services:
+  #
+  # mysql service
+  #
+  mysql_srv:
+    image: mysql:8.0
+    container_name: mysql_ctr
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "${MYSQL_HOST_PORT}:${MYSQL_PORT}"
+    volumes:
+      - ./data:/var/lib/mysql
+      - ./conf:/etc/mysql/conf.d
+      - ./logs:/logs
+  #
+  # phpmyadmin service
+  #
+  phpmyadmin_srv:
+    depends_on:
+      - mysql_srv
+    image: phpmyadmin/phpmyadmin
+    container_name: phpadmin_ctr
+    restart: always
+    environment:
+      PMA_HOST: mysql_srv
+    ports:
+      - ${PMA_HOST_PORT}:${PMA_PORT}
+
+  #
+  # backend service
+  #
+  backend_srv:
+    build: 
+      context: ./api
+      dockerfile: dockerfile.dev
+    depends_on:
+      - mysql_srv
+    image: nodejs
+    container_name: backend_ctr
+    environment:
+      MYSQL_HOST_IP: mysql_srv
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_PORT: ${MYSQL_PORT}
+      API_PORT: ${API_PORT}
+    ports:
+      - ${API_HOST_PORT}:${API_PORT}
+    volumes:
+      - ./api:/api
+    links:
+      - "mysql_srv:database"
+  #
+  # frontend service
+  #
+  frontend_srv:
+    build: 
+      context: ./web
+      dockerfile: dockerfile.dev
+    image: react
+    container_name: frontend_ctr
+    ports:
+      - ${REACT_HOST_PORT}:${REACT_PORT}
+    volumes:
+      - ./web/src:/app/src
+
+volumes:
+  mysql_srv:
+    driver: local

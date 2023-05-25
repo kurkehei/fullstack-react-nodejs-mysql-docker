@@ -1,0 +1,12 @@
+**/node_modules/
+**/npm-debug.log*
+**/pids
+**/conf
+**/data
+**/logs
+**/build
+*.pid
+*.seed
+*.pid.lock
+.env
+
